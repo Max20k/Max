@@ -1,0 +1,51 @@
+---
+title: "Lab 1"
+output: pdf_document
+date: "2025-05-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(tigris)
+
+```
+
+```{r}
+places = read_csv("cdc_places_data.csv")
+dp02 = read_csv("dp02.csv", skip = 1)
+dp03 = read_csv("dp03.csv")
+dp04 = read_csv("dp04.csv")
+dp05 = read_csv("dp05.csv")
+```
+```{r}
+places <- as_tibble(places)
+places = places %>% filter(StateAbbr == "DC")
+head(places, 10)
+```
+```{r}
+dim(places)
+sapply(places,class)
+```
+
+```{r}
+places_tibble = as_tibble(places) |>
+  group_by(Year, LocationName,LocationID) %>%
+  select(c(Year, LocationName, LocationID, Data_Value, MeasureId, TotalPopulation, TotalPop18plus, Geolocation)) %>%
+  pivot_wider(names_from = MeasureId, values_from = Data_Value)
+summary(places_tibble)
+```
+```{r}
+places = places_tibble %>% ungroup() %>% filter(Year == 2022) %>% select(!c("LocationID", "Year")) %>% rename(geoid = LocationName)
+summary(places)
+```
+```{r}
+head(dp02,10)
+```
+
